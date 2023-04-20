@@ -1,6 +1,6 @@
 ---
 title: "Homework 5"
-author: "[Insert your name here]{style='background-color: yellow;'}"
+author: "Conenr Langnas"
 toc: true
 title-block-banner: true
 title-block-style: default
@@ -36,25 +36,20 @@ In this assignment, we will explore decision trees, support vector machines and 
 We will need the following packages:
 
 
-```{R, message=FALSE, warning=FALSE, results='hide'}
-packages <- c(
-  "dplyr", 
-  "readr", 
-  "tidyr", 
-  "purrr", 
-  "broom",
-  "magrittr",
-  "corrplot",
-  "caret",
-  "rpart",
-  "rpart.plot",
-  "e1071",
-  "torch", 
-  "luz"
-)
-
-# renv::install(packages)
-sapply(packages, require, character.only=T)
+```{r}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(purrr)
+library(broom)
+library(magrittr)
+library(corrplot)
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(e1071)
+library(torch)
+library(luz)
 ```
 
 <br><br><br><br>
@@ -78,10 +73,14 @@ Read the data file as a tibble in R. Preprocess the data such that:
 2. all column names to lower case for consistency
 3. Any observations with missing values are dropped
 
-```R
+```{r}
 path <- "data/housing.csv"
 
-df <- ... # Insert your code here
+df <- read_csv(path) %>%
+  mutate_if(is.character, as.factor) %>%
+  rename_all(tolower) %>%
+  na.omit()
+df %>% head
 ```
 
 ---
@@ -90,8 +89,11 @@ df <- ... # Insert your code here
 
 Visualize the correlation matrix of all numeric columns in `df` using `corrplot()`
 
-```R
-df %>% ... # Insert your code here
+```{r}
+df %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot(type = "upper", method = "color", order = "hclust")
 ```
 
 ---
@@ -129,9 +131,9 @@ Fit a linear regression model to predict the `median_house_value` :
 
 Interpret the coefficients and summarize your results. 
 
-```R
-lm_fit <- ... # Insert your code here
-... # Insert your code here
+```{r}
+lm_fit <- lm(median_house_value ~ . -households, data = df_train)
+summary(lm_fit)
 ```
 
 ---
